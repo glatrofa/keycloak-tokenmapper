@@ -1,4 +1,7 @@
 .idea
 *.iml
-target
 deploy.sh
+
+# keycloak plugin
+/target/*
+!/target/dasniko-keycloak-tokenmapper-1.0.jar
