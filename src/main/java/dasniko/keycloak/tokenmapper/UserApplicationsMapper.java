@@ -1,9 +1,10 @@
 package dasniko.keycloak.tokenmapper;
 
+import org.apache.commons.lang.StringUtils;
+import org.jboss.logging.Logger;
 import org.keycloak.models.ClientSessionContext;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.ProtocolMapperModel;
-import org.keycloak.models.UserModel;
 import org.keycloak.models.UserSessionModel;
 import org.keycloak.protocol.oidc.mappers.AbstractOIDCProtocolMapper;
 import org.keycloak.protocol.oidc.mappers.OIDCAccessTokenMapper;
@@ -25,6 +26,8 @@ public class UserApplicationsMapper extends AbstractOIDCProtocolMapper
   
   private static final List<ProviderConfigProperty> configProperties = new ArrayList<>();
   
+  protected static final Logger logger = Logger.getLogger(UserApplicationsMapper.class);
+
   static final String USER_ATTRIBUTE_NAME = "userAttributeName";
 
   static {
@@ -67,17 +70,12 @@ public class UserApplicationsMapper extends AbstractOIDCProtocolMapper
       return token;
     }
 
-    UserModel user = userSession.getUser();
-    String apps = user.getFirstAttribute(mappingModel.getConfig().get(USER_ATTRIBUTE_NAME));
-
-    List<String> appsList = Arrays.asList(apps.split("\\s+"));
-
-    String[] arr = appsList.toArray(new String[0]);
-    token.audience(arr);
-
-    return token;
+    return addAppsToTokenIfValid(
+      getUserAppsAttribute(userSession, mappingModel),
+      token);
   }
 
+  @Override
   public AccessToken transformUserInfoToken(AccessToken token, ProtocolMapperModel mappingModel, KeycloakSession session,
     UserSessionModel userSession, ClientSessionContext clientSessionCtx) {
 
@@ -85,17 +83,12 @@ public class UserApplicationsMapper extends AbstractOIDCProtocolMapper
       return token;
     }
 
-    UserModel user = userSession.getUser();
-    String apps = user.getFirstAttribute(mappingModel.getConfig().get(USER_ATTRIBUTE_NAME));
-
-    List<String> appsList = Arrays.asList(apps.split("\\s+"));
-
-    String[] arr = appsList.toArray(new String[0]);
-    token.audience(arr);
-
-    return token;
+    return addAppsToTokenIfValid(
+      getUserAppsAttribute(userSession, mappingModel),
+      token);
     }
 
+    @Override
     public IDToken transformIDToken(IDToken token, ProtocolMapperModel mappingModel, KeycloakSession session,
       UserSessionModel userSession, ClientSessionContext clientSessionCtx) {
 
@@ -103,14 +96,32 @@ public class UserApplicationsMapper extends AbstractOIDCProtocolMapper
         return token;
       }
 
-    UserModel user = userSession.getUser();
-    String apps = user.getFirstAttribute(mappingModel.getConfig().get(USER_ATTRIBUTE_NAME));
+      return addAppsToTokenIfValid(
+        getUserAppsAttribute(userSession, mappingModel),
+        token);
+    }
 
-    List<String> appsList = Arrays.asList(apps.split("\\s+"));
+    private String getUserAppsAttribute(UserSessionModel userSession, ProtocolMapperModel mappingModel) {
+      return userSession.getUser().getFirstAttribute(mappingModel.getConfig().get(USER_ATTRIBUTE_NAME));
+    }
 
-    String[] arr = appsList.toArray(new String[0]);
-    token.audience(arr);
+    private IDToken addAppsToTokenIfValid(String apps, IDToken token) {
+      if (StringUtils.isNotBlank(apps)) {
+        List<String> appsList = Arrays.asList(apps.split("\\s+"));
+        String[] arr = appsList.toArray(new String[0]);
+        token.audience(arr);
+      }
 
-    return token;
+      return token;
+    }
+
+    private AccessToken addAppsToTokenIfValid(String apps, AccessToken token) {
+      if (StringUtils.isNotBlank(apps)) {
+        List<String> appsList = Arrays.asList(apps.split("\\s+"));
+        String[] arr = appsList.toArray(new String[0]);
+        token.audience(arr);
+      }
+
+      return token;
     }
 }
