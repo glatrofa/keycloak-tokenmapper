@@ -1,6 +1,5 @@
 package dasniko.keycloak.tokenmapper;
 
-import org.apache.commons.lang.StringUtils;
 import org.jboss.logging.Logger;
 import org.keycloak.models.ClientSessionContext;
 import org.keycloak.models.KeycloakSession;
@@ -34,7 +33,7 @@ public class UserApplicationsMapper extends AbstractOIDCProtocolMapper
     configProperties.add(new ProviderConfigProperty(USER_ATTRIBUTE_NAME, "User Attribute Name", "User attribute name that contains the list od applications id.",
       ProviderConfigProperty.STRING_TYPE, "apps"));
 
-    OIDCAttributeMapperHelper.addIncludeInTokensConfig(configProperties, UserApplicationsMapper.class); // show add to id/access tokens and userinfo options
+    OIDCAttributeMapperHelper.addIncludeInTokensConfig(configProperties, UserApplicationsMapper.class); // show add to id\/access tokens and userinfo options
   }
 
   @Override
@@ -106,7 +105,7 @@ public class UserApplicationsMapper extends AbstractOIDCProtocolMapper
     }
 
     private IDToken addAppsToTokenIfValid(String apps, IDToken token) {
-      if (StringUtils.isNotBlank(apps)) {
+      if (!apps.isBlank()) {
         List<String> appsList = Arrays.asList(apps.split("\\s+"));
         String[] arr = appsList.toArray(new String[0]);
         token.audience(arr);
@@ -116,7 +115,7 @@ public class UserApplicationsMapper extends AbstractOIDCProtocolMapper
     }
 
     private AccessToken addAppsToTokenIfValid(String apps, AccessToken token) {
-      if (StringUtils.isNotBlank(apps)) {
+      if (!apps.isBlank()) {
         List<String> appsList = Arrays.asList(apps.split("\\s+"));
         String[] arr = appsList.toArray(new String[0]);
         token.audience(arr);
