@@ -5,8 +5,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>dasniko</groupId>
-	<artifactId>keycloak-tokenmapper</artifactId>
-	<version>22.0.0</version>
+	<artifactId>keycloak-token-mapper</artifactId>
+	<version>1.0.0</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
