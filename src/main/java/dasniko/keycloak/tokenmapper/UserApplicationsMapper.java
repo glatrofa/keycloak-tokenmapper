@@ -105,7 +105,7 @@ public class UserApplicationsMapper extends AbstractOIDCProtocolMapper
     }
 
     private IDToken addAppsToTokenIfValid(String apps, IDToken token) {
-      if (!apps.isBlank()) {
+      if (apps != null && !apps.isBlank()) {
         List<String> appsList = Arrays.asList(apps.split("\\s+"));
         String[] arr = appsList.toArray(new String[0]);
         token.audience(arr);
@@ -115,7 +115,7 @@ public class UserApplicationsMapper extends AbstractOIDCProtocolMapper
     }
 
     private AccessToken addAppsToTokenIfValid(String apps, AccessToken token) {
-      if (!apps.isBlank()) {
+      if (apps != null && !apps.isBlank()) {
         List<String> appsList = Arrays.asList(apps.split("\\s+"));
         String[] arr = appsList.toArray(new String[0]);
         token.audience(arr);
